@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Juego de voz</title>
+  <style>
+    body {
+      font-family: "Comic Sans MS", cursive, sans-serif;
+      background: linear-gradient(to bottom, #fef3c7, #fde68a);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      text-align: center;
+    }
+
+    h1 {
+      color: #92400e;
+      font-size: 2rem;
+    }
+
+    button {
+      background-color: #3a3830;
+      border: none;
+      border-radius: 12px;
+      padding: 15px 30px;
+      font-size: 1.2rem;
+      margin: 10px;
+      cursor: pointer;
+      transition: transform 0.1s, background-color 0.2s;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      background-color: #fde047;
+    }
+
+    audio {
+      margin-top: 20px;
+    }
+
+    .recording {
+      background-color: #ef4444 !important;
+      color: white;
+    }
+
+    footer {
+      margin-top: 30px;
+      font-size: 0.9rem;
+      color: #78350f;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎧 Escucha y responde con tu voz 🎙️</h1>
+
+  <!-- Audio de la pregunta -->
+  <audio id="questionAudio" controls>
+    <source src="pregunta.mp3" type="audio/mpeg" />
+    Tu navegador no soporta audio.
+  </audio>
+
+  <!-- Botones de grabación -->
+  <div>
+    <button id="startBtn">🎙️ Grabar mi respuesta</button>
+    <button id="stopBtn" disabled>⏹️ Detener grabación</button>
+  </div>
+
+  <!-- Reproducción de la respuesta -->
+  <audio id="playback" controls style="display: none;"></audio>
+
+  <footer>
+    <p>Todo ocurre en tu navegador — nada se guarda ni se envía.</p>
+  </footer>
+
+  <script>
+    let mediaRecorder;
+    let audioChunks = [];
+    const startBtn = document.getElementById("startBtn");
+    const stopBtn = document.getElementById("stopBtn");
+    const playback = document.getElementById("playback");
+
+    startBtn.addEventListener("click", async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        audioChunks = [];
+
+        mediaRecorder.ondataavailable = e => {
+          if (e.data.size > 0) audioChunks.push(e.data);
+        };
+
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(audioChunks, { type: "audio/webm" });
+          const url = URL.createObjectURL(blob);
+          playback.src = url;
+          playback.style.display = "block";
+        };
+
+        mediaRecorder.start();
+        startBtn.disabled = true;
+        startBtn.classList.add("recording");
+        stopBtn.disabled = false;
+      } catch (err) {
+        alert("No se pudo acceder al micrófono 😢");
+        console.error(err);
+      }
+    });
+
+    stopBtn.addEventListener("click", () => {
+      mediaRecorder.stop();
+      startBtn.disabled = false;
+      startBtn.classList.remove("recording");
+      stopBtn.disabled = true;
+    });
+  </script>
+</body>
+</html>
