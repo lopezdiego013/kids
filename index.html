@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Crea tu historia</title>
   <style>
     body {
@@ -23,62 +23,67 @@
     }
 
     h1 {
-      font-size: 2.5em;
-      text-shadow: 2px 2px 3px #fff;
+      font-size: 80px;
+      text-shadow: 3px 3px 5px #fff;
+      margin-bottom: 30px;
+      transition: font-size 1s ease, transform 1s ease;
+    }
+
+    h1.small {
+      font-size: 60px;
+      transform: translateY(-10px);
     }
 
     button {
-      font-size: 1.5em;
+      font-size: 2em; /* 🔹 Botones más grandes */
       background-color: #ff80ab;
       color: white;
       border: none;
-      padding: 20px 40px;
-      border-radius: 20px;
+      padding: 25px 60px;
+      border-radius: 40px;
       cursor: pointer;
       transition: transform 0.2s, background-color 0.2s;
-      margin: 15px;
-      box-shadow: 3px 3px 10px rgba(0,0,0,0.2);
+      margin: 20px;
+      box-shadow: 4px 4px 12px rgba(0,0,0,0.25);
+      font-weight: bold;
     }
 
     button:hover {
-      transform: scale(1.05);
+      transform: scale(1.08);
       background-color: #f50057;
     }
 
     p {
-      font-size: 1.2em;
-      line-height: 1.5;
+      font-size: 1.3em;
+      line-height: 1.6;
       background-color: rgba(255, 255, 255, 0.75);
       border-radius: 20px;
-      padding: 20px;
+      padding: 25px;
       max-width: 700px;
       box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
     }
 
     .hidden { display: none; }
 
-    /* Cards */
     .cards-container {
       display: flex;
       justify-content: center;
       flex-wrap: wrap;
-      gap: 20px;
+      gap: 30px;
       margin-top: 20px;
     }
 
     .card {
       background-color: rgba(255, 255, 255, 0.85);
-      border-radius: 20px;
-      padding: 20px;
-      width: 220px;
+      border-radius: 25px;
+      padding: 25px;
+      width: 240px;
       text-align: center;
       box-shadow: 3px 3px 10px rgba(0,0,0,0.2);
       transition: transform 0.2s;
     }
 
-    .card:hover {
-      transform: scale(1.05);
-    }
+    .card:hover { transform: scale(1.05); }
 
     .card img {
       width: 100%;
@@ -86,7 +91,6 @@
       margin-bottom: 10px;
     }
 
-    /* Modal */
     .modal {
       position: fixed;
       top: 0;
@@ -101,8 +105,8 @@
 
     .modal-content {
       background: #fff;
-      border-radius: 20px;
-      padding: 30px;
+      border-radius: 25px;
+      padding: 40px;
       text-align: center;
       width: 90%;
       max-width: 400px;
@@ -117,12 +121,10 @@
   </style>
 </head>
 <body>
-  <h1>🎨 Crea tu historia 🎶</h1>
+  <h1 id="mainTitle">🎨 Crea tu historia 🎶</h1>
 
-  <!-- Pantalla inicial -->
   <button id="startButton">🎧 Iniciar</button>
 
-  <!-- Texto introductorio -->
   <div id="introText" class="hidden">
     <p>
       ¡Hola, pequeños narradores! 📖✨<br><br>
@@ -134,10 +136,8 @@
     </p>
   </div>
 
-  <!-- Botón para jugar -->
   <button id="playButton" class="hidden">🎲 Jugar</button>
 
-  <!-- Zona de juego -->
   <div id="gameArea" class="hidden">
     <h2>Elige y graba tu historia</h2>
 
@@ -163,7 +163,6 @@
     <audio id="userAudio" controls></audio>
   </div>
 
-  <!-- Modal de felicitaciones -->
   <div id="congratsModal" class="modal">
     <div class="modal-content">
       <h2>🎉 ¡Felicitaciones! 🎉</h2>
@@ -188,14 +187,15 @@
     const modal = document.getElementById("congratsModal");
     const modalAudio = document.getElementById("modalAudio");
     const retryButton = document.getElementById("retryButton");
+    const mainTitle = document.getElementById("mainTitle");
 
     let mediaRecorder;
     let audioChunks = [];
 
-    // Iniciar audio introductivo
     startButton.addEventListener("click", () => {
       startButton.classList.add("hidden");
       introText.classList.remove("hidden");
+      mainTitle.classList.add("small");
       introAudio.play();
 
       introAudio.onended = () => {
@@ -204,23 +204,18 @@
       };
     });
 
-    // Mostrar zona de juego
     playButton.addEventListener("click", () => {
       playButton.classList.add("hidden");
       gameArea.classList.remove("hidden");
     });
 
-    // Grabar historia
     recordButton.addEventListener("click", async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         mediaRecorder = new MediaRecorder(stream);
         audioChunks = [];
 
-        mediaRecorder.ondataavailable = (event) => {
-          audioChunks.push(event.data);
-        };
-
+        mediaRecorder.ondataavailable = (event) => audioChunks.push(event.data);
         mediaRecorder.onstop = () => {
           const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
           const url = URL.createObjectURL(audioBlob);
@@ -232,23 +227,22 @@
         mediaRecorder.start();
         recordButton.classList.add("hidden");
         stopButton.classList.remove("hidden");
-      } catch (error) {
+      } catch {
         alert("No se pudo acceder al micrófono 😢");
       }
     });
 
-    // Detener grabación
     stopButton.addEventListener("click", () => {
       mediaRecorder.stop();
       stopButton.classList.add("hidden");
     });
 
-    // Reiniciar todo
     retryButton.addEventListener("click", () => {
       modal.style.display = "none";
       gameArea.classList.add("hidden");
       playButton.classList.remove("hidden");
       userAudio.src = "";
+      mainTitle.classList.remove("small"); // 🔹 vuelve a grande si reinicia
     });
   </script>
 </body>
