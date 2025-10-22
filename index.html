@@ -19,6 +19,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      padding: 20px;
     }
 
     h1 {
@@ -42,6 +43,16 @@
     button:hover {
       transform: scale(1.05);
       background-color: #f50057;
+    }
+
+    p {
+      font-size: 1.2em;
+      line-height: 1.5;
+      background-color: rgba(255, 255, 255, 0.75);
+      border-radius: 20px;
+      padding: 20px;
+      max-width: 700px;
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
     }
 
     .hidden { display: none; }
@@ -111,6 +122,18 @@
   <!-- Pantalla inicial -->
   <button id="startButton">🎧 Iniciar</button>
 
+  <!-- Texto introductorio -->
+  <div id="introText" class="hidden">
+    <p>
+      ¡Hola, pequeños narradores! 📖✨<br><br>
+      Hoy vamos a usar nuestra imaginación y nuestras palabras mágicas para crear historias muy divertidas. En este juego llamado <b>“Crea tu historia”</b>, el sistema elegirá de forma aleatoria un personaje, un lugar y una acción.<br><br>
+      Cuando aparezcan en pantalla, ¡descubriremos qué historia nos toca inventar! 🤩<br><br>
+      Podrás contar cómo un perro canta en el castillo, o cómo una princesa cocina en la luna 🐶🏰🌙.<br><br>
+      Cada combinación será una nueva aventura, y tú serás el protagonista con tu voz, creatividad e ideas.<br><br>
+      🎲 ¡Observa, imagina y crea tu historia con alegría!
+    </p>
+  </div>
+
   <!-- Botón para jugar -->
   <button id="playButton" class="hidden">🎲 Jugar</button>
 
@@ -120,7 +143,7 @@
 
     <div class="cards-container">
       <div class="card">
-        <img src="persona.png" alt="Persona">
+        <img src="persona.jpg" alt="Persona">
         <p><b>Persona</b></p>
       </div>
       <div class="card">
@@ -155,6 +178,7 @@
 
   <script>
     const startButton = document.getElementById("startButton");
+    const introText = document.getElementById("introText");
     const playButton = document.getElementById("playButton");
     const gameArea = document.getElementById("gameArea");
     const recordButton = document.getElementById("recordButton");
@@ -171,9 +195,11 @@
     // Iniciar audio introductivo
     startButton.addEventListener("click", () => {
       startButton.classList.add("hidden");
+      introText.classList.remove("hidden");
       introAudio.play();
 
       introAudio.onended = () => {
+        introText.classList.add("hidden");
         playButton.classList.remove("hidden");
       };
     });
@@ -227,4 +253,3 @@
   </script>
 </body>
 </html>
-
