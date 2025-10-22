@@ -56,7 +56,7 @@
     <br><br>
 
     <button id="recordButton">🎤 Grabar respuesta</button>
-    <button id="stopButton" disabled>🛑 Detener</button>
+    <button id="stopButton" style="display:none;">🛑 Detener</button>
     <br><br>
     <audio id="userAudio" controls></audio>
   </div>
@@ -96,8 +96,10 @@
         };
 
         mediaRecorder.start();
-        recordButton.disabled = true;
-        stopButton.disabled = false;
+
+        // Oculta el botón de grabar y muestra el de detener
+        recordButton.style.display = "none";
+        stopButton.style.display = "inline-block";
       } catch (error) {
         alert("No se pudo acceder al micrófono 😢");
         console.error(error);
@@ -107,8 +109,10 @@
     // Detener grabación
     stopButton.addEventListener("click", () => {
       mediaRecorder.stop();
-      recordButton.disabled = false;
-      stopButton.disabled = true;
+
+      // Cambia visibilidad de los botones
+      stopButton.style.display = "none";
+      recordButton.style.display = "inline-block";
     });
   </script>
 </body>
