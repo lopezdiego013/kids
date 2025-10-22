@@ -75,7 +75,14 @@
   <footer>
     <p>Todo ocurre en tu navegador — nada se guarda ni se envía.</p>
   </footer>
-
+  <script>
+    window.addEventListener("load", () => {
+    const audio = document.getElementById("questionAudio");
+    audio.play().catch(() => {
+      console.log("Autoplay bloqueado. Esperando interacción del usuario.");
+     });
+    });
+  </script>
   <script>
     let mediaRecorder;
     let audioChunks = [];
@@ -119,4 +126,5 @@
   </script>
 </body>
 </html>
+
 
