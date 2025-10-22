@@ -1,130 +1,115 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Juego de voz</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Juego de Audio</title>
   <style>
     body {
-      font-family: "Comic Sans MS", cursive, sans-serif;
-      background: linear-gradient(to bottom, #fef3c7, #fde68a);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      margin: 0;
+      background-color: #fce4ec;
+      font-family: 'Comic Sans MS', sans-serif;
       text-align: center;
+      padding: 50px;
+      color: #4a148c;
     }
 
     h1 {
-      color: #92400e;
-      font-size: 2rem;
+      font-size: 2.5em;
+      margin-bottom: 20px;
     }
 
     button {
-      background-color: #3a3830;
+      font-size: 1.5em;
+      background-color: #ff80ab;
+      color: white;
       border: none;
-      border-radius: 12px;
-      padding: 15px 30px;
-      font-size: 1.2rem;
-      margin: 10px;
+      padding: 20px 40px;
+      border-radius: 20px;
       cursor: pointer;
-      transition: transform 0.1s, background-color 0.2s;
+      transition: transform 0.2s;
+      margin: 15px;
     }
 
     button:hover {
       transform: scale(1.05);
-      background-color: #fde047;
+      background-color: #f50057;
     }
 
     audio {
       margin-top: 20px;
     }
-
-    .recording {
-      background-color: #ef4444 !important;
-      color: white;
-    }
-
-    footer {
-      margin-top: 30px;
-      font-size: 0.9rem;
-      color: #78350f;
-    }
   </style>
 </head>
 <body>
-  <h1>🎧 Escucha y responde con tu voz 🎙️</h1>
+  <h1>🎶 Completa el Audio 🎶</h1>
+  <p>Presiona el botón para comenzar el juego.</p>
 
-  <!-- Audio de la pregunta -->
-  <audio id="questionAudio" controls autoplay >
-    <source src="pregunta.mp3" type="audio/mpeg" />
-    Tu navegador no soporta audio.
-  </audio>
+  <button id="startButton">🎧 Iniciar</button>
 
-  <!-- Botones de grabación -->
-  <div>
-    <button id="startBtn">🎙️ Grabar mi respuesta</button>
-    <button id="stopBtn" disabled>⏹️ Detener grabación</button>
+  <div id="gameArea" style="display:none;">
+    <h2>Escucha y responde con tu voz</h2>
+    <audio id="questionAudio" controls>
+      <source src="pregunta.mp3" type="audio/mpeg">
+      Tu navegador no soporta audio.
+    </audio>
+
+    <br><br>
+
+    <button id="recordButton">🎤 Grabar respuesta</button>
+    <button id="stopButton" disabled>🛑 Detener</button>
+    <br><br>
+    <audio id="userAudio" controls></audio>
   </div>
 
-  <!-- Reproducción de la respuesta -->
-  <audio id="playback" controls style="display: none;"></audio>
+  <script>
+    const startButton = document.getElementById("startButton");
+    const gameArea = document.getElementById("gameArea");
+    const questionAudio = document.getElementById("questionAudio");
+    const recordButton = document.getElementById("recordButton");
+    const stopButton = document.getElementById("stopButton");
+    const userAudio = document.getElementById("userAudio");
 
-  <footer>
-    <p>Todo ocurre en tu navegador — nada se guarda ni se envía.</p>
-  </footer>
-  <script>
-    window.addEventListener("load", () => {
-    const audio = document.getElementById("questionAudio");
-    audio.play().catch(() => {
-      console.log("Autoplay bloqueado. Esperando interacción del usuario.");
-     });
-    });
-  </script>
-  <script>
     let mediaRecorder;
     let audioChunks = [];
-    const startBtn = document.getElementById("startBtn");
-    const stopBtn = document.getElementById("stopBtn");
-    const playback = document.getElementById("playback");
 
-    startBtn.addEventListener("click", async () => {
+    // Al presionar "Iniciar"
+    startButton.addEventListener("click", () => {
+      startButton.style.display = "none";
+      gameArea.style.display = "block";
+      questionAudio.play(); // Reproduce el audio principal
+    });
+
+    // Grabar respuesta
+    recordButton.addEventListener("click", async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         mediaRecorder = new MediaRecorder(stream);
         audioChunks = [];
 
-        mediaRecorder.ondataavailable = e => {
-          if (e.data.size > 0) audioChunks.push(e.data);
+        mediaRecorder.ondataavailable = (event) => {
+          audioChunks.push(event.data);
         };
 
         mediaRecorder.onstop = () => {
-          const blob = new Blob(audioChunks, { type: "audio/webm" });
-          const url = URL.createObjectURL(blob);
-          playback.src = url;
-          playback.style.display = "block";
+          const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+          userAudio.src = URL.createObjectURL(audioBlob);
         };
 
         mediaRecorder.start();
-        startBtn.disabled = true;
-        startBtn.classList.add("recording");
-        stopBtn.disabled = false;
-      } catch (err) {
+        recordButton.disabled = true;
+        stopButton.disabled = false;
+      } catch (error) {
         alert("No se pudo acceder al micrófono 😢");
-        console.error(err);
+        console.error(error);
       }
     });
 
-    stopBtn.addEventListener("click", () => {
+    // Detener grabación
+    stopButton.addEventListener("click", () => {
       mediaRecorder.stop();
-      startBtn.disabled = false;
-      startBtn.classList.remove("recording");
-      stopBtn.disabled = true;
+      recordButton.disabled = false;
+      stopButton.disabled = true;
     });
   </script>
 </body>
 </html>
-
-
