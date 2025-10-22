@@ -20,6 +20,7 @@
       align-items: center;
       justify-content: center;
       padding: 20px;
+      overflow: hidden;
     }
 
     h1 {
@@ -27,19 +28,22 @@
       text-shadow: 3px 3px 5px #fff;
       margin-bottom: 30px;
       transition: font-size 1s ease, transform 1s ease;
+      position: relative;
+      top: 0;
     }
 
+    /* 🔹 Al iniciar, baja el título un poco */
     h1.small {
       font-size: 60px;
-      transform: translateY(-10px);
+      transform: translateY(40px);
     }
 
     button {
-      font-size: 2em; /* 🔹 Botones más grandes */
+      font-size: 2.5em;
       background-color: #ff80ab;
       color: white;
       border: none;
-      padding: 25px 60px;
+      padding: 25px 70px;
       border-radius: 40px;
       cursor: pointer;
       transition: transform 0.2s, background-color 0.2s;
@@ -235,6 +239,7 @@
     stopButton.addEventListener("click", () => {
       mediaRecorder.stop();
       stopButton.classList.add("hidden");
+      recordButton.classList.remove("hidden");
     });
 
     retryButton.addEventListener("click", () => {
@@ -242,10 +247,8 @@
       gameArea.classList.add("hidden");
       playButton.classList.remove("hidden");
       userAudio.src = "";
-      mainTitle.classList.remove("small"); // 🔹 vuelve a grande si reinicia
+      mainTitle.classList.remove("small");
     });
   </script>
 </body>
 </html>
-
-
