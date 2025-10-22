@@ -60,4 +60,170 @@
       border-radius: 20px;
       padding: 20px;
       width: 220px;
-      tex
+      text-align: center;
+      box-shadow: 3px 3px 10px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+    }
+
+    .card img {
+      width: 100%;
+      border-radius: 15px;
+      margin-bottom: 10px;
+    }
+
+    /* Modal */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: #fff;
+      border-radius: 20px;
+      padding: 30px;
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 3px 3px 10px rgba(0,0,0,0.3);
+      animation: pop 0.3s ease;
+    }
+
+    @keyframes pop {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <h1>🎨 Crea tu historia 🎶</h1>
+
+  <!-- Pantalla inicial -->
+  <button id="startButton">🎧 Iniciar</button>
+
+  <!-- Botón para jugar -->
+  <button id="playButton" class="hidden">🎲 Jugar</button>
+
+  <!-- Zona de juego -->
+  <div id="gameArea" class="hidden">
+    <h2>Elige y graba tu historia</h2>
+
+    <div class="cards-container">
+      <div class="card">
+        <img src="persona.jpg" alt="Persona">
+        <p><b>Persona</b></p>
+      </div>
+      <div class="card">
+        <img src="lugar.jpg" alt="Lugar">
+        <p><b>Lugar</b></p>
+      </div>
+      <div class="card">
+        <img src="accion.jpg" alt="Acción">
+        <p><b>Acción</b></p>
+      </div>
+    </div>
+
+    <br>
+    <button id="recordButton">🎤 Grabar historia</button>
+    <button id="stopButton" class="hidden">🛑 Detener</button>
+    <br><br>
+    <audio id="userAudio" controls></audio>
+  </div>
+
+  <!-- Modal de felicitaciones -->
+  <div id="congratsModal" class="modal">
+    <div class="modal-content">
+      <h2>🎉 ¡Felicitaciones! 🎉</h2>
+      <p>Escucha tu historia:</p>
+      <audio id="modalAudio" controls></audio>
+      <br><br>
+      <button id="retryButton">🔁 Intentar de nuevo</button>
+    </div>
+  </div>
+
+  <audio id="introAudio" src="intro.mp3"></audio>
+
+  <script>
+    const startButton = document.getElementById("startButton");
+    const playButton = document.getElementById("playButton");
+    const gameArea = document.getElementById("gameArea");
+    const recordButton = document.getElementById("recordButton");
+    const stopButton = document.getElementById("stopButton");
+    const userAudio = document.getElementById("userAudio");
+    const introAudio = document.getElementById("introAudio");
+    const modal = document.getElementById("congratsModal");
+    const modalAudio = document.getElementById("modalAudio");
+    const retryButton = document.getElementById("retryButton");
+
+    let mediaRecorder;
+    let audioChunks = [];
+
+    // Iniciar audio introductivo
+    startButton.addEventListener("click", () => {
+      startButton.classList.add("hidden");
+      introAudio.play();
+
+      introAudio.onended = () => {
+        playButton.classList.remove("hidden");
+      };
+    });
+
+    // Mostrar zona de juego
+    playButton.addEventListener("click", () => {
+      playButton.classList.add("hidden");
+      gameArea.classList.remove("hidden");
+    });
+
+    // Grabar historia
+    recordButton.addEventListener("click", async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        audioChunks = [];
+
+        mediaRecorder.ondataavailable = (event) => {
+          audioChunks.push(event.data);
+        };
+
+        mediaRecorder.onstop = () => {
+          const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+          const url = URL.createObjectURL(audioBlob);
+          userAudio.src = url;
+          modalAudio.src = url;
+          modal.style.display = "flex";
+        };
+
+        mediaRecorder.start();
+        recordButton.classList.add("hidden");
+        stopButton.classList.remove("hidden");
+      } catch (error) {
+        alert("No se pudo acceder al micrófono 😢");
+      }
+    });
+
+    // Detener grabación
+    stopButton.addEventListener("click", () => {
+      mediaRecorder.stop();
+      stopButton.classList.add("hidden");
+    });
+
+    // Reiniciar todo
+    retryButton.addEventListener("click", () => {
+      modal.style.display = "none";
+      gameArea.classList.add("hidden");
+      playButton.classList.remove("hidden");
+      userAudio.src = "";
+    });
+  </script>
+</body>
+</html>
