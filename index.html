@@ -6,16 +6,27 @@
   <title>Juego de Audio</title>
   <style>
     body {
-      background-color: #fce4ec;
+      background-image: url('fondo.jpg'); /* usa fondo.png o fondo.webp si es otro formato */
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
       font-family: 'Comic Sans MS', sans-serif;
       text-align: center;
       padding: 50px;
       color: #4a148c;
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: brightness(1.1);
     }
 
     h1 {
       font-size: 2.5em;
       margin-bottom: 20px;
+      text-shadow: 2px 2px 3px #fff;
     }
 
     button {
@@ -26,8 +37,9 @@
       padding: 20px 40px;
       border-radius: 20px;
       cursor: pointer;
-      transition: transform 0.2s;
+      transition: transform 0.2s, background-color 0.2s;
       margin: 15px;
+      box-shadow: 3px 3px 10px rgba(0,0,0,0.2);
     }
 
     button:hover {
@@ -72,11 +84,11 @@
     let mediaRecorder;
     let audioChunks = [];
 
-    // Al presionar "Iniciar"
+    // Iniciar juego
     startButton.addEventListener("click", () => {
       startButton.style.display = "none";
       gameArea.style.display = "block";
-      questionAudio.play(); // Reproduce el audio principal
+      questionAudio.play();
     });
 
     // Grabar respuesta
@@ -97,7 +109,7 @@
 
         mediaRecorder.start();
 
-        // Oculta el botón de grabar y muestra el de detener
+        // Mostrar solo el botón de detener
         recordButton.style.display = "none";
         stopButton.style.display = "inline-block";
       } catch (error) {
@@ -110,7 +122,7 @@
     stopButton.addEventListener("click", () => {
       mediaRecorder.stop();
 
-      // Cambia visibilidad de los botones
+      // Cambiar visibilidad de los botones
       stopButton.style.display = "none";
       recordButton.style.display = "inline-block";
     });
