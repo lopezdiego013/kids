@@ -12,52 +12,76 @@
       background-image: url('fondo.jpg');
       background-size: cover;
       background-position: center;
-      text-align: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      min-height: 100vh;
       color: #333;
+      overflow-x: hidden;
+    }
+
+    .screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      height: 100vh;
+      transition: opacity 0.8s ease;
+    }
+
+    .hidden {
+      display: none !important;
     }
 
     h1 {
       font-size: 80px;
       color: #ff4081;
-      margin-top: 100px;
-      transition: all 0.5s ease;
+      margin-bottom: 30px;
+      transition: font-size 0.8s ease, margin 0.8s ease;
+      text-shadow: 2px 2px 5px #fff;
+    }
+
+    h1.small {
+      font-size: 60px;
+      margin-top: 50px;
     }
 
     .btn {
       font-size: 28px;
-      padding: 20px 40px;
+      padding: 20px 50px;
       margin: 20px;
       border: none;
-      border-radius: 20px;
+      border-radius: 25px;
       background-color: #ffca28;
       color: #333;
       cursor: pointer;
       transition: transform 0.2s;
+      box-shadow: 3px 3px 8px rgba(0,0,0,0.25);
+      font-weight: bold;
     }
 
     .btn:hover {
       transform: scale(1.1);
     }
 
-    .hidden {
-      display: none;
-    }
-
     .intro-text {
       font-size: 24px;
-      background-color: rgba(255, 255, 255, 0.8);
+      background-color: rgba(255, 255, 255, 0.85);
       border-radius: 20px;
       margin: 40px auto;
-      padding: 20px;
+      padding: 30px;
       width: 80%;
+      max-width: 900px;
       line-height: 1.6;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
 
     .cards {
-      display: flex;
+      display: none;
       justify-content: center;
       margin-top: 40px;
-      gap: 20px;
+      gap: 40px;
+      flex-wrap: wrap;
     }
 
     .card {
@@ -67,12 +91,27 @@
       overflow: hidden;
       background-color: rgba(255, 255, 255, 0.8);
       box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      padding-bottom: 10px;
     }
 
     .card img {
       width: 100%;
-      height: 100%;
+      height: 85%;
       object-fit: cover;
+      border-bottom: 3px solid #ffca28;
+    }
+
+    .card-title {
+      font-size: 28px;
+      color: #ff4081;
+      font-weight: bold;
+      margin-top: 5px;
+      text-shadow: 1px 1px 3px white;
     }
 
     .modal {
@@ -88,101 +127,168 @@
 
     .modal-content {
       background: white;
-      border-radius: 20px;
-      padding: 30px;
+      border-radius: 25px;
+      padding: 40px;
       text-align: center;
       width: 80%;
-      max-width: 400px;
+      max-width: 500px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      animation: pop 0.4s ease;
     }
 
     .modal.show {
       visibility: visible;
     }
+
+    @keyframes pop {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-content h2 {
+      font-size: 60px;
+      color: #ff4081;
+      text-shadow: 2px 2px 6px #fff;
+      margin-bottom: 15px;
+    }
+
+    .modal-content p {
+      font-size: 32px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 20px;
+      text-shadow: 1px 1px 4px rgba(255, 255, 255, 0.6);
+    }
+
+    #userAudio {
+      display: none;
+    }
   </style>
 </head>
 <body>
-  <h1 id="title">Crea tu historia</h1>
-  <button id="startBtn" class="btn">🎬 Iniciar</button>
-  <div id="introText" class="intro-text hidden">
-    ¡Hola, pequeños narradores! 📖✨<br><br>
-    Hoy vamos a usar nuestra imaginación y nuestras palabras mágicas para crear historias muy divertidas. 
-    En este juego llamado “Crea tu historia”, el sistema elegirá de forma aleatoria un personaje, un lugar y una acción.<br><br>
-    Cuando aparezcan en pantalla, ¡descubriremos qué historia nos toca inventar! 🤩<br>
-    Podrás contar cómo un perro canta en el castillo, o cómo una princesa cocina en la luna 🐶🏰🌙.<br><br>
-    Cada combinación será una nueva aventura, y tú serás el protagonista con tu voz, creatividad e ideas.<br><br>
-    🎲 ¡Observa, imagina y crea tu historia con alegría!
+  <!-- 🟣 Pantalla inicial -->
+  <div id="startScreen" class="screen">
+    <h1 id="mainTitle">🎨 Crea tu historia 🎶</h1>
+    <button id="startButton" class="btn">🎧 Iniciar</button>
   </div>
 
-  <audio id="introAudio" src="intro.mp3"></audio>
-
-  <button id="playBtn" class="btn hidden">🎮 Jugar</button>
-
-  <div id="cards" class="cards hidden">
-    <div class="card"><img id="personaImg" src="" alt="Persona"></div>
-    <div class="card"><img id="lugarImg" src="" alt="Lugar"></div>
-    <div class="card"><img id="accionImg" src="" alt="Acción"></div>
+  <!-- 🟢 Pantalla de introducción -->
+  <div id="introScreen" class="screen hidden">
+    <h1 id="mainTitle2">🎨 Crea tu historia 🎶</h1>
+    <div class="intro-text">
+      ¡Hola, pequeños narradores! 📖✨<br><br>
+      Hoy vamos a usar nuestra imaginación y nuestras palabras mágicas para crear historias muy divertidas. 
+      En este juego llamado <b>“Crea tu historia”</b>, el sistema elegirá de forma aleatoria un personaje, un lugar y una acción.<br>
+      Cuando aparezcan en pantalla, ¡descubriremos qué historia nos toca inventar! 🤩<br>
+      Podrás contar cómo un perro canta en el castillo, o cómo una princesa cocina en la luna 🐶🏰🌙.<br>
+      Cada combinación será una nueva aventura, y tú serás el protagonista con tu voz, creatividad e ideas.<br>
+      🎲 ¡Observa, imagina y crea tu historia con alegría!
+    </div>
+    <button id="playButton" class="btn hidden" style="margin-bottom: 30px;">🎮 Jugar</button>
   </div>
 
-  <div id="controls" class="hidden">
-    <button id="recordBtn" class="btn">🎙️ Grabar respuesta</button>
-    <button id="stopBtn" class="btn hidden">⏹️ Detener</button>
+  <!-- 🟡 Zona del juego -->
+  <div id="gameArea" class="screen hidden">
+    <h1>Tu historia mágica ✨</h1>
+    <div id="cards" class="cards">
+      <div class="card">
+        <img id="personaImg" src="" alt="Personaje">
+        <div class="card-title">Personaje</div>
+      </div>
+      <div class="card">
+        <img id="lugarImg" src="" alt="Lugar">
+        <div class="card-title">Lugar</div>
+      </div>
+      <div class="card">
+        <img id="accionImg" src="" alt="Acción">
+        <div class="card-title">Acción</div>
+      </div>
+    </div>
+
+    <div id="controls" class="hidden">
+      <button id="recordBtn" class="btn hidden">🎙️ Grabar historia</button>
+      <button id="stopBtn" class="btn hidden">⏹️ Detener</button>
+      <audio id="userAudio" controls></audio>
+    </div>
   </div>
 
+  <!-- 🎉 Modal de felicitación -->
   <div id="modal" class="modal">
     <div class="modal-content">
-      <h2>🎉 ¡Felicitaciones!</h2>
-      <p>Escucha tu historia:</p>
+      <h2>🎉 ¡Felicitaciones! 🎉</h2>
+      <p>🎧 Escucha tu historia:</p>
       <audio id="playback" controls></audio><br>
       <button id="retryBtn" class="btn">🔁 Intentar de nuevo</button>
     </div>
   </div>
 
+  <!-- 🎵 Audios -->
+  <audio id="introAudio" src="intro.mp3"></audio>
+  <audio id="indicacionesAudio" src="indicaciones.mp3"></audio>
+
   <script>
-    const startBtn = document.getElementById('startBtn');
-    const introAudio = document.getElementById('introAudio');
-    const introText = document.getElementById('introText');
-    const playBtn = document.getElementById('playBtn');
-    const title = document.getElementById('title');
-    const cards = document.getElementById('cards');
-    const recordBtn = document.getElementById('recordBtn');
-    const stopBtn = document.getElementById('stopBtn');
-    const controls = document.getElementById('controls');
-    const modal = document.getElementById('modal');
-    const playback = document.getElementById('playback');
-    const retryBtn = document.getElementById('retryBtn');
+    const startButton = document.getElementById("startButton");
+    const startScreen = document.getElementById("startScreen");
+    const introScreen = document.getElementById("introScreen");
+    const introAudio = document.getElementById("introAudio");
+    const indicacionesAudio = document.getElementById("indicacionesAudio");
+    const playButton = document.getElementById("playButton");
+    const mainTitle = document.getElementById("mainTitle");
+    const gameArea = document.getElementById("gameArea");
+    const cards = document.getElementById("cards");
+    const recordBtn = document.getElementById("recordBtn");
+    const stopBtn = document.getElementById("stopBtn");
+    const controls = document.getElementById("controls");
+    const modal = document.getElementById("modal");
+    const playback = document.getElementById("playback");
+    const retryBtn = document.getElementById("retryBtn");
+    const userAudio = document.getElementById("userAudio");
 
     const personas = ['persona1.jpg', 'persona2.jpg', 'persona3.jpg'];
     const lugares = ['lugar1.jpg', 'lugar2.jpg', 'lugar3.jpg'];
     const acciones = ['accion1.jpg', 'accion2.jpg', 'accion3.jpg'];
 
-    startBtn.addEventListener('click', () => {
-      startBtn.classList.add('hidden');
-      title.style.marginTop = "50px";
-      title.style.fontSize = "60px";
-      introText.classList.remove('hidden');
+    startButton.addEventListener("click", () => {
+      startScreen.classList.add("hidden");
+      introScreen.classList.remove("hidden");
+      mainTitle.classList.add("small");
       introAudio.play();
+
       introAudio.onended = () => {
-        playBtn.classList.remove('hidden');
+        playButton.classList.remove("hidden");
       };
     });
 
-    playBtn.addEventListener('click', () => {
-      introText.classList.add('hidden');
-      playBtn.classList.add('hidden');
-      cards.classList.remove('hidden');
+    playButton.addEventListener("click", () => {
+      introScreen.classList.add("hidden");
+      gameArea.classList.remove("hidden");
+      cards.style.display = 'flex';
       controls.classList.remove('hidden');
 
+      // Mostrar imágenes aleatorias
       document.getElementById('personaImg').src = personas[Math.floor(Math.random()*personas.length)];
       document.getElementById('lugarImg').src = lugares[Math.floor(Math.random()*lugares.length)];
       document.getElementById('accionImg').src = acciones[Math.floor(Math.random()*acciones.length)];
+
+      // Reproducir audio de indicaciones solo la primera vez
+      if (!indicacionesAudio.hasPlayed) {
+        indicacionesAudio.play();
+        indicacionesAudio.hasPlayed = true;
+        indicacionesAudio.onended = () => {
+          recordBtn.classList.remove("hidden");
+        };
+      } else {
+        recordBtn.classList.remove("hidden");
+      }
     });
 
     let mediaRecorder;
     let audioChunks = [];
 
-    recordBtn.addEventListener('click', async () => {
-      recordBtn.classList.add('hidden');
-      stopBtn.classList.remove('hidden');
+    recordBtn.addEventListener("click", async () => {
+      recordBtn.classList.add("hidden");
+      stopBtn.classList.remove("hidden");
+
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaRecorder = new MediaRecorder(stream);
       audioChunks = [];
@@ -190,10 +296,10 @@
       mediaRecorder.start();
     });
 
-    stopBtn.addEventListener('click', () => {
+    stopBtn.addEventListener("click", () => {
       mediaRecorder.stop();
-      stopBtn.classList.add('hidden');
-      recordBtn.classList.remove('hidden');
+      stopBtn.classList.add("hidden");
+      recordBtn.classList.remove("hidden");
 
       mediaRecorder.onstop = () => {
         const blob = new Blob(audioChunks, { type: 'audio/mp3' });
@@ -203,11 +309,13 @@
       };
     });
 
-    retryBtn.addEventListener('click', () => {
+    retryBtn.addEventListener("click", () => {
       modal.classList.remove('show');
-      cards.classList.add('hidden');
-      controls.classList.add('hidden');
-      playBtn.classList.remove('hidden');
+      gameArea.classList.add("hidden");
+      introScreen.classList.remove("hidden");
+      playButton.classList.remove("hidden");
+      userAudio.src = "";
+      // No reiniciamos las indicaciones
     });
   </script>
 </body>
